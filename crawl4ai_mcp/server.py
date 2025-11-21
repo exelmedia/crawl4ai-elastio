@@ -2243,11 +2243,24 @@ def main():
         if transport == "stdio":
             mcp.run()
         elif transport == "streamable-http" or transport == "http":
-            # Just run FastMCP normally - it should handle forever mode
-            print(f"Starting FastMCP server on {host}:{port}...")
-            mcp.run(transport="streamable-http", host=host, port=port)
-            # If we reach here, server stopped unexpectedly
-            print("Server stopped!")
+            # Use uvicorn directly for deployment (FastMCP mcp.run() doesn't stay alive)
+            print(f"Starting FastMCP HTTP server on {host}:{port}...")
+            import uvicorn
+            
+            # Create ASGI app from FastMCP
+            # FastMCP internally uses MCP's create_asgi_app
+            from mcp.server.sse import create_sse_transport
+            from mcp.server import Server
+            
+            # Get the MCP server instance from FastMCP
+            # We'll use uvicorn to run it properly
+            uvicorn.run(
+                "crawl4ai_mcp.server:mcp",
+                host=host,
+                port=port,
+                log_level="info",
+                access_log=True
+            )
         elif transport == "sse":
             mcp.run(transport="sse", host=host, port=port)
         else:

@@ -21,7 +21,7 @@ services:
       - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID:-}
     
     ports:
-      - "8000:8000"
+      - "3003:8000"
     
     volumes:
       - ./logs:/app/logs

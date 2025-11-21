@@ -2246,21 +2246,20 @@ def main():
             # Use uvicorn directly for deployment (FastMCP mcp.run() doesn't stay alive)
             print(f"Starting FastMCP HTTP server on {host}:{port}...")
             import uvicorn
+            import asyncio
             
-            # Create ASGI app from FastMCP
-            # FastMCP internally uses MCP's create_asgi_app
-            from mcp.server.sse import create_sse_transport
-            from mcp.server import Server
-            
-            # Get the MCP server instance from FastMCP
-            # We'll use uvicorn to run it properly
-            uvicorn.run(
-                "crawl4ai_mcp.server:mcp",
+            # Run uvicorn with the FastMCP instance in HTTP mode
+            # This keeps the server alive indefinitely
+            config = uvicorn.Config(
+                app=mcp,
                 host=host,
                 port=port,
                 log_level="info",
-                access_log=True
+                access_log=True,
+                loop="asyncio"
             )
+            server = uvicorn.Server(config)
+            asyncio.run(server.serve())
         elif transport == "sse":
             mcp.run(transport="sse", host=host, port=port)
         else:

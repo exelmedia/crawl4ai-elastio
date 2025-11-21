@@ -2033,7 +2033,7 @@ async def multi_url_crawl(
     
     Pattern Examples:
     - Wildcard: '*news*', '*api*', '*.pdf', 'https://docs.*'
-    - Regex: r'.*\/(api|v\d+)\/', r'https:\/\/[^\/]+\.com\/news'
+    - Regex: r'.*(api|v[0-9]+)', r'https://[^/]+\.com/news'
     
     Perfect for mixed-domain crawling with site-specific optimizations.
     """

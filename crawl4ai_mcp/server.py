@@ -2243,7 +2243,11 @@ def main():
         if transport == "stdio":
             mcp.run()
         elif transport == "streamable-http" or transport == "http":
+            # Just run FastMCP normally - it should handle forever mode
+            print(f"Starting FastMCP server on {host}:{port}...")
             mcp.run(transport="streamable-http", host=host, port=port)
+            # If we reach here, server stopped unexpectedly
+            print("Server stopped!")
         elif transport == "sse":
             mcp.run(transport="sse", host=host, port=port)
         else:

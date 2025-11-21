@@ -305,6 +305,12 @@ def _ensure_browser_setup():
 
 # Tool definitions with immediate registration but lazy implementation
 
+# Health check endpoint for deployment platforms
+@mcp.resource("health://status")
+def health_check() -> str:
+    """Health check endpoint for Elast.io and other deployment platforms"""
+    return "OK"
+
 @mcp.tool()
 def get_system_diagnostics() -> dict:
     """

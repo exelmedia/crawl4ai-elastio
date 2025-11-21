@@ -2243,27 +2243,22 @@ def main():
         if transport == "stdio":
             mcp.run()
         elif transport == "streamable-http" or transport == "http":
-            # Use uvicorn directly for deployment (FastMCP mcp.run() doesn't stay alive)
+            # Use uvicorn with FastMCP's http_app() for proper ASGI deployment
             print(f"Starting FastMCP HTTP server on {host}:{port}...", flush=True)
             import uvicorn
-            import traceback
             
-            try:
-                # Run uvicorn directly on the module path
-                # This is the simplest and most reliable way
-                print("Calling uvicorn.run()...", flush=True)
-                uvicorn.run(
-                    app=mcp,
-                    host=host,
-                    port=port,
-                    log_level="info",
-                    access_log=True
-                )
-                print("uvicorn.run() returned!", flush=True)
-            except Exception as e:
-                print(f"UVICORN ERROR: {e}", flush=True)
-                traceback.print_exc()
-                raise
+            # Get the ASGI app from FastMCP
+            http_app = mcp.http_app()
+            print("FastMCP HTTP app created, starting uvicorn...", flush=True)
+            
+            # Run uvicorn with the ASGI app - this keeps the server alive
+            uvicorn.run(
+                http_app,
+                host=host,
+                port=port,
+                log_level="info",
+                access_log=True
+            )
         elif transport == "sse":
             mcp.run(transport="sse", host=host, port=port)
         else:
